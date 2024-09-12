@@ -5,8 +5,19 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         Calculadora cal = new Calculadora();
-        String expressao = sc.next();
-        cal.avaliaExpressao(expressao);
+        String expressao = "";
 
+        while(!expressao.equals("desligar")){
+
+            System.out.println("Digite uma expressão ou escreva desligar.");
+            expressao = sc.nextLine();
+
+            try {
+                cal.avaliaExpressao(expressao);
+            } catch (Exception e) {
+                System.out.println(e.getClass() + ": " + e.getMessage());
+            }
+
+        }
     }
 }
