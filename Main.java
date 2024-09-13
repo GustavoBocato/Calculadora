@@ -5,12 +5,14 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         Calculadora cal = new Calculadora();
-        String expressao = "";
+        String expressao;
 
-        while(!expressao.equals("desligar")){
+        while (true){
 
             System.out.println("Digite uma expressão ou escreva desligar.");
             expressao = sc.nextLine();
+
+            if(expressao.equals("desligar")) break;
 
             try {
                 cal.avaliaExpressao(expressao);

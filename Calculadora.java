@@ -148,8 +148,8 @@ public class Calculadora {
 
         String[] ed = booleano.split(operadorBooleano, 2);
 
-        double numeroEsquerdo = avaliaNumero(ed[0]);
-        double numeroDireito = avaliaNumero(ed[1]);
+        double numeroEsquerdo = avaliaExpressaoAlgebrica(ed[0]);
+        double numeroDireito = avaliaExpressaoAlgebrica(ed[1]);
 
         switch (operadorBooleano) {
 
@@ -179,5 +179,12 @@ public class Calculadora {
         }
 
         throw new IllegalArgumentException("Operador booleano inválido.");
+    }
+
+    public double avaliaExpressaoAlgebrica(String expressaoAlgebrica){
+
+        expressaoAlgebrica = resolveParenteses(expressaoAlgebrica);
+
+        return avaliaSemParenteses(expressaoAlgebrica);
     }
 }
