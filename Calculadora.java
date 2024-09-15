@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -5,9 +6,10 @@ import java.util.regex.Pattern;
 public class Calculadora {
 
     List<String> operadoresBooleanos = List.of("==", "!=", ">=", "<=", "<", ">");
+    String operadorDeAtribuicao = ":=";
+    private HashMap<String, String> variaveis = new HashMap<String, String>();
 
     public String resolveParenteses(String expressao) {
-
         Pattern pattern = Pattern.compile("\\([^()]*\\)");
         Matcher matcher = pattern.matcher(expressao);
         boolean temParenteses = matcher.find();
@@ -32,6 +34,8 @@ public class Calculadora {
     }
 
     public double avaliaSoma(String expressao) {
+        expressao = expressao.trim();
+
         String[] somatorio = expressao.split("\\+");
         double Soma = 0;
 
@@ -45,16 +49,24 @@ public class Calculadora {
     }
 
     public double avaliaSubtracao(String expressao) {
+        expressao = expressao.trim();
         String[] subtratorio = expressao.split("-");
 
         if (subtratorio.length == 1) return avaliaMultiplicacao(subtratorio[0]);
 
+        if(subtratorio[0].isEmpty()) subtratorio[0] = "0";
+
         double resultado = avaliaMultiplicacao(subtratorio[0]) * 2;
+        int sinal = 1;
 
         for (String subExpressao : subtratorio) {
 
-            resultado -= avaliaMultiplicacao(subExpressao);
-
+            if(subExpressao.trim().isEmpty()){
+                sinal *= -1;
+            }else{
+                resultado -= avaliaMultiplicacao(subExpressao)*sinal;
+                sinal = 1;
+            }
         }
 
         return resultado;
@@ -98,6 +110,14 @@ public class Calculadora {
     }
 
     public double avaliaNumero(String expressao) {
+        expressao = expressao.trim();
+
+        if(variaveis.containsKey(expressao)){
+
+            expressao = variaveis.get(expressao);
+
+        }
+
         return Double.parseDouble(expressao);
     }
 
@@ -105,22 +125,22 @@ public class Calculadora {
         return avaliaSoma(expressao);
     }
 
-    public void avaliaExpressao(String expressao) {
+    public String avaliaExpressao(String expressao) {
+        if(ehAtribuicao(expressao)){
+            atribui(expressao);
+            return null;
+        }
 
-        if(ehBooleano(expressao)){
+        if(ehBooleana(expressao)){
 
-            System.out.println(avaliaBooleano(expressao));
-            return;
+            return String.valueOf(avaliaBooleano(expressao));
 
         }
 
-        String expressaoSemParenteses = resolveParenteses(expressao);
-
-        System.out.println(avaliaSemParenteses(expressaoSemParenteses));
+        return String.valueOf(avaliaExpressaoAlgebrica(expressao));
     }
 
-    public boolean ehBooleano(String expressao) {
-
+    public boolean ehBooleana(String expressao) {
         boolean resultado = false;
 
         for (String operadorBooleano : operadoresBooleanos) {
@@ -132,20 +152,19 @@ public class Calculadora {
         return resultado;
     }
 
+    public boolean ehAtribuicao(String expressao){
+        return expressao.contains(operadorDeAtribuicao);
+    }
+
     public boolean avaliaBooleano(String booleano) {
-
         for (String operadorBooleano : operadoresBooleanos) {
-
             if(booleano.contains(operadorBooleano)) return operacao(booleano, operadorBooleano);
-
         }
 
         throw new IllegalArgumentException("Operador booleano inválido.");
-
     }
 
     public boolean operacao(String booleano, String operadorBooleano) {
-
         String[] ed = booleano.split(operadorBooleano, 2);
 
         double numeroEsquerdo = avaliaExpressaoAlgebrica(ed[0]);
@@ -182,9 +201,33 @@ public class Calculadora {
     }
 
     public double avaliaExpressaoAlgebrica(String expressaoAlgebrica){
-
         expressaoAlgebrica = resolveParenteses(expressaoAlgebrica);
 
         return avaliaSemParenteses(expressaoAlgebrica);
+    }
+
+    public void atribui(String expressao){
+        String[] ed = expressao.split(operadorDeAtribuicao, 2);
+        ed[0] = ed[0].trim();
+
+        if(ed[0].length() != 1 || !Character.isLetter(ed[0].charAt(0))){
+
+            throw new IllegalArgumentException("O nome da variável é inválido");
+
+        }
+
+        String avaliacao = String.valueOf(avaliaExpressaoAlgebrica(ed[1]));
+        variaveis.put(ed[0], avaliacao);
+    }
+
+    public void visualizaResultado(String expressao){
+
+        String resultado = avaliaExpressao(expressao);
+
+        if(resultado != null){
+
+            System.out.println(resultado);
+
+        }
     }
 }
