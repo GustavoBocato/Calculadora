@@ -34,8 +34,6 @@ public class Calculadora {
     }
 
     public double avaliaSoma(String expressao) {
-        expressao = expressao.trim();
-
         String[] somatorio = expressao.split("\\+");
         double Soma = 0;
 
@@ -49,12 +47,11 @@ public class Calculadora {
     }
 
     public double avaliaSubtracao(String expressao) {
-        expressao = expressao.trim();
         String[] subtratorio = expressao.split("-");
 
         if (subtratorio.length == 1) return avaliaMultiplicacao(subtratorio[0]);
 
-        if(subtratorio[0].isEmpty()) subtratorio[0] = "0";
+        if(subtratorio[0].trim().isEmpty()) subtratorio[0] = "0";
 
         double resultado = avaliaMultiplicacao(subtratorio[0]) * 2;
         int sinal = 1;
@@ -96,14 +93,9 @@ public class Calculadora {
 
             double avaliacao = avaliaNumero(subExpressao);
 
-            if (avaliacao == 0) {
-
-                throw new ArithmeticException("Divisão por zero.");
-
-            }
+            if (avaliacao == 0) throw new ArithmeticException("Divisão por zero.");
 
             resultado /= avaliacao;
-
         }
 
         return resultado;
@@ -112,11 +104,7 @@ public class Calculadora {
     public double avaliaNumero(String expressao) {
         expressao = expressao.trim();
 
-        if(variaveis.containsKey(expressao)){
-
-            expressao = variaveis.get(expressao);
-
-        }
+        if(variaveis.containsKey(expressao)) expressao = variaveis.get(expressao);
 
         return Double.parseDouble(expressao);
     }
@@ -125,31 +113,31 @@ public class Calculadora {
         return avaliaSoma(expressao);
     }
 
-    public String avaliaExpressao(String expressao) {
+    public void avaliaExpressao(String expressao) {
+
         if(ehAtribuicao(expressao)){
             atribui(expressao);
-            return null;
+            return;
         }
 
         if(ehBooleana(expressao)){
 
-            return String.valueOf(avaliaBooleano(expressao));
+            System.out.println(avaliaBooleano(expressao));
+            return;
 
         }
 
-        return String.valueOf(avaliaExpressaoAlgebrica(expressao));
+        System.out.println(avaliaExpressaoAlgebrica(expressao));
     }
 
     public boolean ehBooleana(String expressao) {
-        boolean resultado = false;
-
         for (String operadorBooleano : operadoresBooleanos) {
 
-            if (expressao.contains(operadorBooleano)) resultado = true;
+            if (expressao.contains(operadorBooleano)) return true;
 
         }
 
-        return resultado;
+        return false;
     }
 
     public boolean ehAtribuicao(String expressao){
@@ -212,22 +200,11 @@ public class Calculadora {
 
         if(ed[0].length() != 1 || !Character.isLetter(ed[0].charAt(0))){
 
-            throw new IllegalArgumentException("O nome da variável é inválido");
+            throw new IllegalArgumentException("O nome da variável é inválido.");
 
         }
 
         String avaliacao = String.valueOf(avaliaExpressaoAlgebrica(ed[1]));
         variaveis.put(ed[0], avaliacao);
-    }
-
-    public void visualizaResultado(String expressao){
-
-        String resultado = avaliaExpressao(expressao);
-
-        if(resultado != null){
-
-            System.out.println(resultado);
-
-        }
     }
 }

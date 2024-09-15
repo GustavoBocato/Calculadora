@@ -13,7 +13,7 @@ public class Main {
             if(expressao.equals("desligar")) break;
 
             try {
-                cal.visualizaResultado(expressao);
+                cal.avaliaExpressao(expressao);
             } catch (Exception e) {
                 System.out.println(e.getClass() + ": " + e.getMessage());
             }
