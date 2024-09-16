@@ -34,7 +34,7 @@ public class Calculadora {
     }
 
     public double avaliaSoma(String expressao) {
-        String[] somatorio = expressao.split("\\+");
+        String[] somatorio = expressao.split("\\+", -1);
         double Soma = 0;
 
         for (String subExpressao : somatorio) {
@@ -47,9 +47,12 @@ public class Calculadora {
     }
 
     public double avaliaSubtracao(String expressao) {
-        String[] subtratorio = expressao.split("-");
+        String[] subtratorio = expressao.split("-", -1);
 
         if (subtratorio.length == 1) return avaliaMultiplicacao(subtratorio[0]);
+
+        if(subtratorio[subtratorio.length - 1].trim().isEmpty())
+            throw new IllegalArgumentException("Expressão mal formada, termina em -.");
 
         if(subtratorio[0].trim().isEmpty()) subtratorio[0] = "0";
 
@@ -70,7 +73,7 @@ public class Calculadora {
     }
 
     public double avaliaMultiplicacao(String expressao) {
-        String[] produtorio = expressao.split("\\*");
+        String[] produtorio = expressao.split("\\*", -1);
         double resultado = 1;
 
         for (String subExpressao : produtorio) {
@@ -83,7 +86,7 @@ public class Calculadora {
     }
 
     public double avaliaDivisao(String expressao) {
-        String[] divisorio = expressao.split("/");
+        String[] divisorio = expressao.split("/", -1);
 
         if (divisorio.length == 1) return avaliaNumero(divisorio[0]);
 
@@ -114,7 +117,6 @@ public class Calculadora {
     }
 
     public void avaliaExpressao(String expressao) {
-
         if(ehAtribuicao(expressao)){
             atribui(expressao);
             return;
